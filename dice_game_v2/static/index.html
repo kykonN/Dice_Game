@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice Game</title>
+    <script>
+        let ws;
+
+        function connect() {
+            // Connect to the WebSocket server
+            ws = new WebSocket('ws://localhost:8080/game');
+
+            ws.onopen = function () {
+                console.log('Connected to WebSocket');
+            };
+
+            ws.onmessage = function (event) {
+                // Display server response
+                const response = event.data;
+                document.getElementById('response').innerText = response;
+            };
+
+            ws.onerror = function (error) {
+                console.log('WebSocket Error:', error);
+            };
+
+            ws.onclose = function () {
+                console.log('Disconnected from WebSocket');
+            };
+        }
+
+        function sendChoice() {
+            const choice = document.getElementById('choice').value;
+            ws.send(choice);
+        }
+
+        function sendBet() {
+            const bet = document.getElementById('bet').value;
+            ws.send(parseInt(bet));
+        }
+
+        window.onload = function () {
+            connect(); // Establish WebSocket connection when the page loads
+        };
+    </script>
+</head>
+<body>
+    <h1>Welcome to the Dice Game</h1>
+    <label for="choice">Choose Odd or Even (O/E):</label>
+    <input type="text" id="choice" maxlength="1">
+    <button onclick="sendChoice()">Submit Choice</button>
+
+    <br><br>
+
+    <label for="bet">Enter your bet amount:</label>
+    <input type="number" id="bet">
+    <button onclick="sendBet()">Submit Bet</button>
+
+    <h2>Game Response:</h2>
+    <p id="response"></p>
+</body>
+</html>
